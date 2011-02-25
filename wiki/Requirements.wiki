@@ -1,4 +1,4 @@
-#summary Techincal requirements for sSearch
+#summary Technical requirements for sSearch
 
 = Requirements =
 
