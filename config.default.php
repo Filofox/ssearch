@@ -46,11 +46,11 @@ $config[ 'content.title_word_length' ] = 10;
  * Database
  */
 // Connection details
-$config[ 'database.host' ] 		= '';
+$config[ 'database.host' ] 		= 'localhost';
 $config[ 'database.user' ] 		= '';
 $config[ 'database.password' ] 	= '';
 
-$config[ 'database.name' ] 	= 'ssearch';
+$config[ 'database.name' ] 	= '';
 
 // Table name prefix
 $config[ 'database.table_prefix' ] = 'ssearch_';
