@@ -1,5 +1,3 @@
-#Introduction
-
 = Introduction to sSearch =
 
 This wiki will in due course hold all documentation related to sSearch.
