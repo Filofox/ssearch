@@ -5,7 +5,6 @@
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL (http://www.gnu.org/licenses/gpl.html) licenses
  * http://code.google.com/p/ssearch
  */
-
 require_once( sSearch::GetPathLibrary() . 'core/sSearchContent.class.php' );
 require_once( sSearch::GetPathLibrary() . '_lib/LibPDFToText.class.php' );
 
