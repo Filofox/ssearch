@@ -4,11 +4,11 @@
 
 In due course installation will be automated. For now:
 
-* Download and uncompress the code on to your web server. Since there are no public-facing parts of the code, it is not necessary to have the library in the document root of a web site.
-* Create a database in MySQL for sSearch to use (alternatively, use an existing database).
-* In the _install_ directory, you will find a file called _install.sql_. You will need to run this SQL (e.g. through PHPMyAdmin) to create the necessary tables in your database.
-* Create a file in the sSearch directory called config.local.php
-* In this new file, copy and paste the following:
+ * Download and uncompress the code on to your web server. Since there are no public-facing parts of the code, it is not necessary to have the library in the document root of a web site.
+ * Create a database in MySQL for sSearch to use (alternatively, use an existing database).
+ * In the _install_ directory, you will find a file called _install.sql_. You will need to run this SQL (e.g. through PHPMyAdmin) to create the necessary tables in your database.
+ * Create a file in the sSearch directory called config.local.php
+ * In this new file, copy and paste the following:
 
 {{{
 // Connection details
