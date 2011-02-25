@@ -1,0 +1,9 @@
+#summary Techincal requirements for sSearch
+
+= Requirements =
+
+sSearch requires:
+
+ * PHP5 -- I generally test on the latest version of PHP5 (5.3.5 at time of writing). Although I don't think there are likely to be any problems using older versions, I can't guarantee it -- please let me know if you find any incompatibilities. This code will NOT work on any version of PHP4.
+ * cURL support -- sSearch uses cURL to perform requests over the internet. If there's sufficient demand I could probably create a non-cURL alternative, but most hosts have cURL enabled by default these days.
+ * MySQL 5 -- again, I generally test on the latest version of MySQL. I'm pretty sure that you'll need at least MySQL 5.
