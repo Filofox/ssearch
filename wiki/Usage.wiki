@@ -46,7 +46,7 @@ sSearchQuery Object
                 (
                     [url] => http://example.com
                     [title] => An example web site
-                    [snippet] => This is an example web site with various terms in the page
+                    [snippet] => This is an example web site with...page related to the query above
                     [snippet_highlighted] => This is an <b>example</b> web site with...page related to the <b>query</b> above
                 )
    ...
