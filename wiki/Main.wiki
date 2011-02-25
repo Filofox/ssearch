@@ -2,4 +2,6 @@
 
 = Introduction to sSearch =
 
+This project was started because I needed a simple PHP-native spidering search engine for a small site that I was working on -- it was to be hosted on a shared server so I couldn't install any sort of dedicated search software. 
 
+The closest match I found was [http://www.sphider.eu/ Sphider], which did what I needed but wasn't really suited to the sort of back-end integration that I wanted. I considered rewriting/porting that project to PHP5 but in the end decided to start from scratch. sSearch is the result.
