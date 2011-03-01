@@ -27,6 +27,8 @@ $config[ 'search_content_types' ] = array
 		sSearch::CONTENT_TYPE_HTML,
 		sSearch::CONTENT_TYPE_PDF
 	);
+// What type of output when using CLI?
+$config[ 'cli_search_output_type' ] = sSearch::OUTPUT_XML;
 
 $config[ 'indexer.minimum_word_length' ] = 3;
 $config[ 'indexer.follow_external_links' ] = false;

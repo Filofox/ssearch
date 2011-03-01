@@ -18,6 +18,9 @@ class sSearch{
 	const CONTENT_TYPE_HTML = 'text/html';
 	const CONTENT_TYPE_PDF = 'application/pdf';
 
+	const OUTPUT_JSON = 'json';
+	const OUTPUT_XML = 'xml';
+
 	/**
 	 * Constructor
 	 */
@@ -56,7 +59,7 @@ class sSearch{
 	 * @param		int			$start				[Optional] Where to start with result set (default = 0)
 	 * @param		int			$max				[Optional] Maximum number of results to return (default = null, i.e. use default from config)
 	 *
-	 * @return		sSearchQuery
+	 * @return		mixed							Varies according to search_output_type config setting (object, JSON or XML)
 	 */
 	public function Search( $query_string, $start = 0, $max = null ){
 
@@ -68,9 +71,8 @@ class sSearch{
 		$query->max = $max;
 
 		$this->Query( $query );
-
+		
 		return $query;
-
 	}
 
 	/**
