@@ -59,4 +59,85 @@ class sSearchQuery implements Iterator, Countable{
 	public function count(){
 		return count( $this->results );
 	}
+	
+	public function toJSON(){
+		return json_encode( $this );
+	}
+	/**
+	 * Convert a query object to XML
+	 *
+	 * @param		sSearchQuery		$query
+	 *
+	 * @return		string
+	 */
+	public function toXML(){
+		
+		$xml =
+'<?xml version="1.0"?>
+<root>
+	<terms><![CDATA[[[terms]]]]></terms>
+	<domain><![CDATA[[[domain]]]]></domain>
+	<start>[[start]]</start>
+	<max>[[max]]</max>
+	<total>[[total]]</total>
+	<count>[[count]]</count>
+	<results>
+		[[results]]
+	</results>
+</root>';
+		
+		$results_xml = '';
+		foreach( $this as $result ){
+			$results_xml .= str_replace
+			(
+				array
+				(
+					'[[url]]',
+					'[[title]]',
+					'[[snippet]]',
+					'[[snippet_highlighted]]'
+				),
+				array
+				(
+					$result->url,
+					$result->title,
+					$result->snippet,
+					$result->snippet_highlighted
+				),
+'
+		<result>
+			<url><![CDATA[[[url]]]]></url>
+			<title><![CDATA[[[title]]]]></title>
+			<snippet><![CDATA[[[snippet]]]]></snippet>
+			<snippet_highlighted><![CDATA[[[snippet_highlighted]]]]></snippet_highlighted>
+		</result>
+'
+			);
+		}
+		
+		return str_replace
+		(
+			array
+			(
+				'[[terms]]',
+				'[[domain]]',
+				'[[start]]',
+				'[[max]]',
+				'[[total]]',
+				'[[count]]',
+				'[[results]]'
+			),
+			array
+			(
+				$this->terms,
+				$this->domain,
+				$this->start,
+				$this->max,
+				$this->total,
+				$this->count,
+				$results_xml
+			),
+			$xml
+		);
+	}
 }
