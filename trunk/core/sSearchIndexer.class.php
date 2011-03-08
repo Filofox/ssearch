@@ -35,7 +35,6 @@ class sSearchIndexer{
 		// Make sure we've got a fully-qualified URL
 		$url = new sSearchURL( $url );
 		$url_string = $url->toString();
-
 		// Check robots.txt
 		if( $this->CheckRobotsTxt( $url ) ){
 			// Make sure it hasn't already been indexed
@@ -123,6 +122,8 @@ class sSearchIndexer{
 						// Unsupported content type -- do nothing
 					}
 				}
+			} else {
+				echo( $request->status );
 			}
 		} catch( Exception $e ){
 		}
@@ -163,9 +164,10 @@ class sSearchIndexer{
 						
 						# following rules only apply if User-agent matches $useragent or '*'
 						if( preg_match('/User-agent: (.*)/i', $line, $match) ) {
-							$ruleapplies = preg_match("/(\*|" . $this->config->user_agent_string . ")/i", $match[1]);
+							$ruleapplies = preg_match("/(^\*|" . $this->config->user_agent_string . "$)/i", $match[1]);
 						}
 						if( $ruleapplies && preg_match('/Disallow:(.*)/i', $line, $regs)) {
+
 							# an empty rule implies full access - no further tests required
 							if(!$regs[1]){
 								$this->robots_txt_files[ $url->domain ][] = true;
@@ -182,7 +184,7 @@ class sSearchIndexer{
 				$this->robots_txt_files[ $url->domain ] = false;
 			}
 		}
-		
+
 		if( $this->robots_txt_files[ $url->domain ] === false ){
 			return true;
 		} else {
@@ -238,10 +240,10 @@ class sSearchURL{
 			$this->path = $output[ 'path' ];
 		}
 		if( isset( $output[ 'query' ] ) ){
-			$this->domain = $output[ 'query' ];
+			$this->query = $output[ 'query' ];
 		}
 		if( isset( $output[ 'fragment' ] ) ){
-			$this->domain = $output[ 'fragment' ];
+			$this->fragment = $output[ 'fragment' ];
 		}
 	}
 	
