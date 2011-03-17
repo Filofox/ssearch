@@ -23,4 +23,7 @@ class sSearchEngine{
 	public function Remove( sSearchContent $content ){
 		throw new Exception( 'You must override this method' );
 	}
+	public function RemoveURL( $url ){
+		throw new Exception( 'You must override this method' );
+	}
 }
