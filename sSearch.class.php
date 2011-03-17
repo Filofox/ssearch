@@ -56,7 +56,7 @@ class sSearch{
 	 * and get a search query object back
 	 *
 	 * @param		string		$query_string
-	 * @param		int			$start				[Optional] Where to start with result set (default = 0)
+	 * @param		int			$start				[Optional] Where to start with result set (default = 0). Set to false to return all results (MySQLMatch only)
 	 * @param		int			$max				[Optional] Maximum number of results to return (default = null, i.e. use default from config)
 	 *
 	 * @return		mixed							Varies according to search_output_type config setting (object, JSON or XML)
@@ -68,7 +68,11 @@ class sSearch{
 
 		$query->terms = $query_string;
 		$query->start = $start;
-		$query->max = $max;
+		if( $max !== null ){
+			$query->max = $max;
+		} else {
+			$query->max = $this->config->query->default_max_results;
+		}
 
 		$this->Query( $query );
 		
@@ -147,6 +151,73 @@ class sSearch{
 
 		return $path;
 	}
+	
+	public static function Snippet( $result, $terms, $content, $snippet_length, $max_terms, $highlight_start, $highlight_end, $join_string ){
+		$snippets = array();
+		// Split terms
+		$terms = explode( ' ', $terms );
+
+		$num_terms = min( $max_terms, count( $terms ) );
+
+		for( $i = 0; $i < $num_terms; $i++ ){
+			$term = $terms[ $i ];
+			$margin = max( 0, floor( ( ( $snippet_length - strlen( $term ) ) / $num_terms ) / 2 ) );
+			if( preg_match( '~\b(.{0,' . $margin . '}' . preg_quote( $term, '~' ) . '.{0,' . $margin . '})\b~i', $content, $matches ) ){
+				$text = trim( $matches[ 1 ] );
+				$snippets[] = array(
+					'pos' => strpos( $content, $text ),
+					'term' => $term,
+					'text' => $text,
+					'text_highlighted' => preg_replace( '~(' . preg_quote( $term, '~' ) . ')~Ui', $highlight_start . '\1' . $highlight_end, $text )
+				);
+			}
+		}
+		// Sort by position in original string
+		usort( $snippets, array( 'self', 'SortSnippets' ) );
+		
+		if( count( $snippets ) > 1 ){
+			$indices = array_keys( $snippets );
+			$snippet_output = '';
+			$snippet_highlighted_output = '';
+			$previous_snippet = false;
+			for( $i = 0; $i < count( $snippets ); $i++ ){
+				$snippet = $snippets[ $i ];
+				if( $previous_snippet !== false  ){
+					if( $snippet[ 'pos' ] <= $previous_snippet[ 'pos' ] + strlen( $previous_snippet[ 'text' ] ) ){
+						$snippet_output = substr( $snippet_output, 0, strripos( $previous_snippet[ 'text' ], $snippet[ 'term' ] ) );
+						$snippet_highlighted_output = substr( $snippet_highlighted_output, 0, strripos( $previous_snippet[ 'text_highlighted' ], $snippet[ 'term' ] ) );
+
+						$snippet_output .= substr( $snippet[ 'text' ], stripos( $snippet[ 'text' ], $snippet[ 'term' ] ) );
+						$snippet_highlighted_output .= substr( $snippet[ 'text_highlighted' ], stripos( $snippet[ 'text' ], $snippet[ 'term' ] ) );
+					} else {
+						$snippet_output .= $join_string . $snippet[ 'text' ];
+						$snippet_highlighted_output .= $join_string . $snippet[ 'text_highlighted' ];
+					}
+				} else {
+					// First part of snippet
+					$snippet_output = $snippet[ 'text' ];
+					$snippet_highlighted_output = $snippet[ 'text_highlighted' ];
+				}
+				$previous_snippet = $snippet;
+			}
+			$result->snippet = $snippet_output;
+			$result->snippet_highlighted = $snippet_highlighted_output;
+		} else {
+			$snippet = array_pop( $snippets );
+			$result->snippet = $snippet[ 'text' ];
+			$result->snippet_highlighted = $snippet[ 'text_highlighted' ];
+		}
+
+	}
+	
+	public static function SortSnippets( $a, $b ){
+		if ( $a[ 'pos' ] == $b[ 'pos' ] ) {
+			return 0;
+		}
+		return ( $a[ 'pos' ] < $b[ 'pos' ] ) ? -1 : 1;
+	}
+
+
 }
 
 /**
