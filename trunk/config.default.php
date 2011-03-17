@@ -30,6 +30,8 @@ $config[ 'search_content_types' ] = array
 // What type of output when using CLI?
 $config[ 'cli_search_output_type' ] = sSearch::OUTPUT_XML;
 
+$config[ 'query.default_max_results' ] = 10;
+
 $config[ 'indexer.minimum_word_length' ] = 3;
 $config[ 'indexer.follow_external_links' ] = false;
 $config[ 'indexer.index_delay' ] = 0.5; // Delay between consecutive requests, in seconds

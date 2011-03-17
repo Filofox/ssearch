@@ -100,8 +100,14 @@ class sSearchEngineMySQLMatch extends sSearchEngine{
 				MATCH ( content )
 				AGAINST ( '" . mysql_real_escape_string( $query->terms, $this->db ) . "' IN BOOLEAN MODE )
 			ORDER BY score DESC
-			LIMIT " . $query->start . "," . $query->max . "
 		";
+
+		// Setting start to false will return all results
+		if( $query->start !== false ){
+			$sql .= " LIMIT " . $query->start . "," . $query->max;
+		} else {
+			$query->max = null;
+		}
 
 		$db_query = mysql_query( $sql, $this->db ) or die( mysql_error() );
 		if( mysql_num_rows( $db_query ) > 0 ){
@@ -109,61 +115,7 @@ class sSearchEngineMySQLMatch extends sSearchEngine{
 				$result = new sSearchResult();
 				$result->url = $row->url;
 				$result->title = $row->title;
-						
-				$snippets = array();
-				// Split terms
-				$terms = explode( ' ', $query->terms );
-
-				$num_terms = min( $this->config->result_max_terms_in_snippet, count( $terms ) );
-
-				for( $i = 0; $i < $num_terms; $i++ ){
-					$term = $terms[ $i ];
-					$margin = max( 0, floor( ( ( $this->config->result_snippet_length - strlen( $term ) ) / $num_terms ) / 2 ) );
-					if( preg_match( '~\b(.{0,' . $margin . '}' . preg_quote( $term, '~' ) . '.{0,' . $margin . '})\b~i', $row->content, $matches ) ){
-						$text = trim( $matches[ 1 ] );
-						$snippets[] = array(
-							'pos' => strpos( $row->content, $text ),
-							'term' => $term,
-							'text' => $text,
-							'text_highlighted' => preg_replace( '~(' . preg_quote( $term, '~' ) . ')~Ui', $this->config->result_snippet_highlight_start . '\1' . $this->config->result_snippet_highlight_end, $text )
-						);
-					}
-				}
-				// Sort by position in original string
-				usort( $snippets, array( $this, 'SortSnippets' ) );
-				
-				if( count( $snippets ) > 1 ){
-					$indices = array_keys( $snippets );
-					$snippet_output = '';
-					$snippet_highlighted_output = '';
-					$previous_snippet = false;
-					for( $i = 0; $i < count( $snippets ); $i++ ){
-						$snippet = $snippets[ $i ];
-						if( $previous_snippet !== false  ){
-							if( $snippet[ 'pos' ] <= $previous_snippet[ 'pos' ] + strlen( $previous_snippet[ 'text' ] ) ){
-								$snippet_output = substr( $snippet_output, 0, strripos( $previous_snippet[ 'text' ], $snippet[ 'term' ] ) );
-								$snippet_highlighted_output = substr( $snippet_highlighted_output, 0, strripos( $previous_snippet[ 'text_highlighted' ], $snippet[ 'term' ] ) );
-
-								$snippet_output .= substr( $snippet[ 'text' ], stripos( $snippet[ 'text' ], $snippet[ 'term' ] ) );
-								$snippet_highlighted_output .= substr( $snippet[ 'text_highlighted' ], stripos( $snippet[ 'text' ], $snippet[ 'term' ] ) );
-							} else {
-								$snippet_output .= $this->config->result_snippet_join_string . $snippet[ 'text' ];
-								$snippet_highlighted_output .= $this->config->result_snippet_join_string . $snippet[ 'text_highlighted' ];
-							}
-						} else {
-							// First part of snippet
-							$snippet_output = $snippet[ 'text' ];
-							$snippet_highlighted_output = $snippet[ 'text_highlighted' ];
-						}
-						$previous_snippet = $snippet;
-					}
-					$result->snippet = $snippet_output;
-					$result->snippet_highlighted = $snippet_highlighted_output;
-				} else {
-					$snippet = array_pop( $snippets );
-					$result->snippet = $snippet[ 'text' ];
-					$result->snippet_highlighted = $snippet[ 'text_highlighted' ];
-				}
+				sSearch::Snippet( $result, $query->terms, $row->content, $this->config->result_snippet_length, $this->config->result_max_terms_in_snippet, $this->config->result_snippet_highlight_start, $this->config->result_snippet_highlight_end, $this->config->result_snippet_join_string );
 
 				$query->AddResult( $result );
 			}
@@ -176,13 +128,6 @@ class sSearchEngineMySQLMatch extends sSearchEngine{
 
 	}
 	
-	static function SortSnippets( $a, $b ){
-		if ( $a[ 'pos' ] == $b[ 'pos' ] ) {
-			return 0;
-		}
-		return ( $a[ 'pos' ] < $b[ 'pos' ] ) ? -1 : 1;
-	}
-
 	/**
 	 * Do whatever is needed to install this engine
 	 */

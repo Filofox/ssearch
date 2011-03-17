@@ -10,4 +10,4 @@ CREATE TABLE `ssearch_content` (
   PRIMARY KEY (`uid`),
   KEY `date` (`date`),
   KEY `domain` (`domain`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
