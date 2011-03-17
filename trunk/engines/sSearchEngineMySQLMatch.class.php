@@ -71,7 +71,7 @@ class sSearchEngineMySQLMatch extends sSearchEngine{
 	}
 
 	/**
-	 * ARemove a URL from the index
+	 * Remove a content item from the index
 	 *
 	 * @param		sSearchContent		$content
 	 */
@@ -84,6 +84,20 @@ class sSearchEngineMySQLMatch extends sSearchEngine{
 		mysql_query( $sql, $this->db ) or die( mysql_error() );
 	}
 
+	/**
+	 * Remove a URL from the index
+	 *
+	 * @param		string		$url
+	 */
+	public function RemoveURL( $url ){
+		$sql = "
+			DELETE FROM " . $this->config->database->table_prefix . "content
+			WHERE
+				uid = '" . md5( $url ) . "'
+		";
+		mysql_query( $sql, $this->db ) or die( mysql_error() );
+	}
+	
 	/**
 	 * Search the database
 	 */
@@ -124,8 +138,16 @@ class sSearchEngineMySQLMatch extends sSearchEngine{
 		// Get total results count
 		$db_query = mysql_query( 'SELECT FOUND_ROWS() AS count', $this->db ) or die( mysql_error() );
 		$query->total = mysql_fetch_object( $db_query )->count;
-		
-
+	}
+	
+	/**
+	 * Completely clear the index
+	 */
+	public function ClearIndex(){
+		$sql = "
+			DELETE FROM " . $this->config->database->table_prefix . "content
+		";
+		mysql_query( $sql, $this->db ) or die( mysql_error() );
 	}
 	
 	/**

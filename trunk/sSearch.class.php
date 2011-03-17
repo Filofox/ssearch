@@ -78,6 +78,20 @@ class sSearch{
 		
 		return $query;
 	}
+	
+	/**
+	 * Remove a URl from the index
+	 */
+	public function RemoveURL( $url ){
+		$this->engine->RemoveURL( $url );
+	}
+
+	/**
+	 * Completely clear the index
+	 */
+	public function ClearIndex(){
+		$this->engine->ClearIndex();
+	}
 
 	/**
 	 * Load and initiate the indexer
