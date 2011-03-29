@@ -149,7 +149,8 @@ class sSearchIndexer{
 			// No, get it
 			require_once( sSearch::GetPathLibrary() . '_lib/LibCurlWrapper.class.php' );
 			$request = new LibCurlWrapper();
-			$request->AddHeader( 'User-Agent', 'sSearchBot' );
+			$request->AddHeader( 'User-Agent', $this->config->user_agent_string );
+
 			$request->SetRetrieveHeaders( true );
 			
 			try{
