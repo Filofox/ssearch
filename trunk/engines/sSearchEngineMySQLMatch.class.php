@@ -35,7 +35,7 @@ class sSearchEngineMySQLMatch extends sSearchEngine{
 
 		// Simply store the text in the database
 		$sql = "
-			INSERT INTO " . $this->config->database->table_prefix . "content
+			INSERT INTO " . $this->config->database->table_prefix . $this->config->database->table . "
 			(
 				uid,
 				mime_type,
@@ -77,7 +77,7 @@ class sSearchEngineMySQLMatch extends sSearchEngine{
 	 */
 	public function Remove( sSearchContent $content ){
 		$sql = "
-			DELETE FROM " . $this->config->database->table_prefix . "content
+			DELETE FROM " . $this->config->database->table_prefix . $this->config->database->table . "
 			WHERE
 				'" . md5( $content->url ) . "'
 		";
@@ -91,13 +91,13 @@ class sSearchEngineMySQLMatch extends sSearchEngine{
 	 */
 	public function RemoveURL( $url ){
 		$sql = "
-			DELETE FROM " . $this->config->database->table_prefix . "content
+			DELETE FROM " . $this->config->database->table_prefix . $this->config->database->table . "
 			WHERE
 				uid = '" . md5( $url ) . "'
 		";
 		mysql_query( $sql, $this->db ) or die( mysql_error() );
 	}
-	
+
 	/**
 	 * Search the database
 	 */
@@ -109,7 +109,7 @@ class sSearchEngineMySQLMatch extends sSearchEngine{
 				*,
 				MATCH ( content )
 					AGAINST ( '" . mysql_real_escape_string( $query->terms, $this->db ) . "' IN BOOLEAN MODE ) AS score
-			FROM " . $this->config->database->table_prefix . "content
+			FROM " . $this->config->database->table_prefix . $this->config->database->table . "
 			WHERE
 				MATCH ( content )
 				AGAINST ( '" . mysql_real_escape_string( $query->terms, $this->db ) . "' IN BOOLEAN MODE )
@@ -134,22 +134,22 @@ class sSearchEngineMySQLMatch extends sSearchEngine{
 				$query->AddResult( $result );
 			}
 		}
-		
+
 		// Get total results count
 		$db_query = mysql_query( 'SELECT FOUND_ROWS() AS count', $this->db ) or die( mysql_error() );
 		$query->total = mysql_fetch_object( $db_query )->count;
 	}
-	
+
 	/**
 	 * Completely clear the index
 	 */
 	public function ClearIndex(){
 		$sql = "
-			DELETE FROM " . $this->config->database->table_prefix . "content
+			DELETE FROM " . $this->config->database->table_prefix . $this->config->database->table . "
 		";
 		mysql_query( $sql, $this->db ) or die( mysql_error() );
 	}
-	
+
 	/**
 	 * Do whatever is needed to install this engine
 	 */

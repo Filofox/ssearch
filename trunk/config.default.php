@@ -56,7 +56,8 @@ $config[ 'database.password' ] 	= '';
 
 $config[ 'database.name' ] 	= '';
 
-// Table name prefix
+// Table
+$config[ 'database.table' ] = 'content';
 $config[ 'database.table_prefix' ] = 'ssearch_';
 
 
