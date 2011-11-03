@@ -15,9 +15,9 @@ class sSearchContentHTML extends sSearchContent{
 	public $mime_type = sSearch::CONTENT_TYPE_HTML;
 
 	function __construct( sSearchConfig $config, $url, $content ){
-		
+
 		parent::__construct( $config, $url, $content );
-		
+
 		$follow_links = true;
 
 		// Read meta tags (regex taken from http://forums.digitalpoint.com/showthread.php?t=104983)
@@ -41,7 +41,7 @@ class sSearchContentHTML extends sSearchContent{
 			// Find links
 			$this->links = $this->FindLinks( $content );
 		}
-		
+
 		// Try to find title element
 		preg_match( '~<\s*title.*>(.*)</title.*>~Ui', $content, $matches );
 		$title = false;
@@ -50,7 +50,7 @@ class sSearchContentHTML extends sSearchContent{
 		} else {
 			// Try to find h1 element
 			preg_match( '~<\s*h1.*>(.*)</h1.*>~Ui', $content, $matches );
-			
+
 			if( isset( $matches[ 1 ] ) ){
 				$title = $matches[ 1 ];
 			}
@@ -68,7 +68,16 @@ class sSearchContentHTML extends sSearchContent{
 		if( $this->config->indexer->exclude_by_marker ){
 			$content = preg_replace( '~' . $this->config->indexer->exclude_marker_open . '(.*)' . $this->config->indexer->exclude_marker_close . '~Usi', ' ', $content );
 		}
-		
+		// Include content?
+		if( $this->config->indexer->include_by_marker ){
+			preg_match_all( '~' . $this->config->indexer->include_marker_open . '(.*)' . $this->config->indexer->include_marker_close . '~Usi', $content, $matches );
+			if( isset( $matches[ 1 ] ) && count( $matches[ 1 ] ) > 0 ){
+				$content = implode( ' ', $matches[ 1 ] );
+			} else {
+				$content = '';
+			}
+		}
+
 		// Remove HTML tags, script etc
 		$this->content = $this->StripHTML( $content );
 
@@ -89,7 +98,7 @@ class sSearchContentHTML extends sSearchContent{
 	 */
 	private function FindLinks( $content ){
 		preg_match_all( '/<a.*?href\s*=\s*["\']([^"\']+)[^>]*>.*?<\/a>/si', $content, $matches );
-		
+
 		return array_unique( $matches[ 1 ] );
 	}
 
@@ -201,7 +210,7 @@ class sSearchContentHTML extends sSearchContent{
 		// Remove all remaining tags and comments and return.
 		return strip_tags( $text );
 	}
-	
+
 }
 
 ?>
