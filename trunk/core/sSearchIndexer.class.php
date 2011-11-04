@@ -35,6 +35,7 @@ class sSearchIndexer{
 		// Make sure we've got a fully-qualified URL
 		$url = new sSearchURL( $url );
 		$url_string = $url->toString();
+
 		// Check robots.txt
 		if( $this->CheckRobotsTxt( $url ) ){
 			// Make sure it hasn't already been indexed
@@ -220,6 +221,7 @@ class sSearchURL{
 	 * @return		array				As per parse_url()
 	 */
 	public function __construct( $url ){
+
 		// Check for protocol
 		if( !preg_match( '~^[a-z]+://~Ui', $url ) ){
 			// No protocol, i.e. this is a path not a full URL
@@ -240,8 +242,12 @@ class sSearchURL{
 		if( !isset( $output[ 'path' ] ) || ( isset( $output[ 'path' ] ) && $output[ 'path' ] == '' ) ){
 			$this->path = '/';
 		} else {
+			if( substr( $output[ 'path' ], -1 ) == '/' ){
+				$output[ 'path' ] = substr( $output[ 'path' ], 0, strlen( $output[ 'path' ] ) - 1);
+			}
 			$this->path = $output[ 'path' ];
 		}
+
 		if( isset( $output[ 'query' ] ) ){
 			$this->query = $output[ 'query' ];
 		}
