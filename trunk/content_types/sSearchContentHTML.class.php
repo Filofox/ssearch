@@ -98,7 +98,11 @@ class sSearchContentHTML extends sSearchContent{
 	 */
 	private function FindLinks( $content ){
 		preg_match_all( '/<a.*?href\s*=\s*["\']([^"\']+)[^>]*>.*?<\/a>/si', $content, $matches );
-
+		foreach( $matches[ 1 ] as $index => $match ){
+			if( strpos( $match, 'mailto:' ) === 0 ){
+				unset( $matches[ 1 ][ $index ] );
+			}
+		}
 		return array_unique( $matches[ 1 ] );
 	}
 

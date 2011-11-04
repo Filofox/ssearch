@@ -14,7 +14,7 @@ class sSearch{
 	private $config;
 	private $indexer;
 	private $engine;
-	
+
 	const CONTENT_TYPE_HTML = 'text/html';
 	const CONTENT_TYPE_PDF = 'application/pdf';
 
@@ -75,10 +75,10 @@ class sSearch{
 		}
 
 		$this->Query( $query );
-		
+
 		return $query;
 	}
-	
+
 	/**
 	 * Remove a URl from the index
 	 */
@@ -91,6 +91,20 @@ class sSearch{
 	 */
 	public function ClearIndex(){
 		$this->engine->ClearIndex();
+	}
+
+	/**
+	 * Load a custom indexer
+	 */
+	public function SetIndexer( sSearchIndexer $indexer ){
+		$this->indexer = $indexer;
+	}
+
+	public function GetConfig(){
+		return $this->config;
+	}
+	public function GetEngine(){
+		return $this->engine;
 	}
 
 	/**
@@ -165,7 +179,7 @@ class sSearch{
 
 		return $path;
 	}
-	
+
 	public static function Snippet( $result, $terms, $content, $snippet_length, $max_terms, $highlight_start, $highlight_end, $join_string ){
 		$snippets = array();
 		// Split terms
@@ -188,7 +202,7 @@ class sSearch{
 		}
 		// Sort by position in original string
 		usort( $snippets, array( 'self', 'SortSnippets' ) );
-		
+
 		if( count( $snippets ) > 1 ){
 			$indices = array_keys( $snippets );
 			$snippet_output = '';
@@ -223,7 +237,7 @@ class sSearch{
 		}
 
 	}
-	
+
 	public static function SortSnippets( $a, $b ){
 		if ( $a[ 'pos' ] == $b[ 'pos' ] ) {
 			return 0;
