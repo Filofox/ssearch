@@ -25,7 +25,7 @@ class LibCurlWrapper{
 	public $status;
 	public $mime_type;
 	public $charset;
-	
+
 	private $headers = array( 'Expect:' );
 
 	/**
