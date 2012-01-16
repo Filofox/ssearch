@@ -13,7 +13,7 @@ require_once( sSearch::GetPathLibrary() . 'core/sSearchContent.class.php' );
 class sSearchContent{
 
 	protected $config;
-	
+
 	public $url;
 
 	public $index = true; //  Set to false to exclude content from search
@@ -22,20 +22,20 @@ class sSearchContent{
 	public $domain;
 	public $title;
 	public $content;
-	
+
 	public $links = null;
-	
+
 	public function __construct( $config, $url, $content_string ){
-		
+
 		$this->config = $config;
-	
+
 		$this->url = $url;
 		
 		$url_details = parse_url( $url );
 		$this->domain = $url_details[ 'host' ];
 		$this->protocol = $url_details[ 'scheme' ];
 	}
-	
+
 	/**
 	 * Get a list of URLs in this document
 	 *

@@ -26,7 +26,7 @@ class sSearchEngineMicrosoftBing extends sSearchEngine{
 
 	/**
 	 * Search Bing
-	 * 
+	 *
 	 * @param		sSearchQuery		$query
 	 */
 	public function Search( sSearchQuery $query ){

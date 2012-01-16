@@ -41,7 +41,7 @@ class LibPDFToText{
 			if (count($a_filter)){
 				$j++;
 				$a_chunks[$j]["filter"] = $a_filter[0];
-	
+
 				$a_data = $this->getDataArray($obj,"stream","endstream");
 				if (count($a_data)){
 					$a_chunks[$j]["data"] = substr($a_data[0],strlen("stream\r\n"),strlen($a_data[0])-strlen("stream\r\n")-strlen("endstream"));
@@ -52,18 +52,18 @@ class LibPDFToText{
 		// decode the chunks
 		$result_data = '';
 		foreach($a_chunks as $chunk){
-	
+
 			// look at each chunk and decide how to decode it - by looking at the contents of the filter
 			$a_filter = explode("/",$chunk["filter"]);
-			
+
 			if (isset($chunk["data"]) && $chunk["data"]!=""){
-				// look at the filter to find out which encoding has been used			
+				// look at the filter to find out which encoding has been used
 				if (strpos($chunk["filter"],"FlateDecode")!==false && strpos($chunk["filter"],"Metadata") === false && strpos($chunk["filter"],"Image") === false ){
 					$data =@ gzuncompress($chunk["data"]);
 					if (trim($data)!=""){
 						$result_data .= $this->ps2txt($data);
 					} else {
-					
+
 						//$result_data .= "x";
 					}
 				}
@@ -71,9 +71,9 @@ class LibPDFToText{
 		}
 
 		return $result_data;
-		
+
 	}
-	
+
 	/**
 	 * Get a list of object from the file
 	 */
@@ -82,7 +82,7 @@ class LibPDFToText{
 		$start = 0;
 		$end = 0;
 		$a_result = array();
-		
+
 		while ($start!==false && $end!==false){
 			$start = strpos($data,$start_word,$end);
 			if ($start!==false){
@@ -95,8 +95,8 @@ class LibPDFToText{
 		}
 		return $a_result;
 	}
-	
-	
+
+
 	private function ps2txt($ps_data){
 		$result = "";
 		$a_data = $this->getDataArray($ps_data,"[","]");
@@ -126,7 +126,7 @@ class LibPDFToText{
 				}
 			}
 		}
-		
+
 		$result = str_replace("[[return]] [[return]] [[return]]", "\n", $result );
 		$result = str_replace("[[return]]", "", $result );
 		return trim( $result );
