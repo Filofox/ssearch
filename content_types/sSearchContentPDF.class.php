@@ -12,11 +12,11 @@ require_once( sSearch::GetPathLibrary() . '_lib/LibPDFToText.class.php' );
  * Extract content from PDF documents
  */
 class sSearchContentPDF extends sSearchContent{
-	
+
 	public $mime_type = sSearch::CONTENT_TYPE_PDF;
 
 	function __construct( sSearchConfig $config, $url, $content_string ){
-		
+
 		parent::__construct( $config, $url, $content_string );
 
 		$pdf_converter = new LibPDFToText();
@@ -24,7 +24,7 @@ class sSearchContentPDF extends sSearchContent{
 		$this->content = $pdf_converter->Convert( $content_string );
 		// Use first line as header
 		$this->title = substr( $this->content, 0, strpos( $this->content, "\n" ) );
-	}	
+	}
 }
 
 ?>

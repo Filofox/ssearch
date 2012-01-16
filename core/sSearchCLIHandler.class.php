@@ -43,24 +43,24 @@
  *     -h                   Show this help
  */
 class sSearchCLIHandler{
-    
+
     private $method;
-    
+
     public function __construct( $arguments ){
-        
+
         $parameters = $this->ParseArguments( $arguments );
-        
+
         if( isset( $parameters[ 'h' ] ) ){
             $this->ShowHelp();
             exit;
         }
 
-        
+
         // Get sSearch class
         $pathinfo = pathinfo( __FILE__ );
         require_once( realpath( $pathinfo[ 'dirname' ] . '/../' ) . '/sSearch.class.php' );
         $search = new sSearch();
-        
+
         // Method
         if( isset( $parameters[ 'm' ] ) ){
             switch( $parameters[ 'm' ] ){
@@ -84,7 +84,7 @@ class sSearchCLIHandler{
                         $parameters[ 'f' ] = sSearch::OUTPUT_JSON;
                     }
                     $query = $search->Search( $parameters[ 'q' ], $parameters[ 's' ], $parameters[ 'n' ] );
-					
+
 					// Output?
 					switch( $parameters[ 'f' ] ){
 						default:
@@ -114,7 +114,7 @@ class sSearchCLIHandler{
             exit;
         }
     }
-    
+
     /**
      * Parse argv array into parameters
      *
@@ -123,9 +123,9 @@ class sSearchCLIHandler{
      * @return      array
      */
     private function ParseArguments( $arguments ){
-        
+
         $parameters = array();
-        
+
         $current_argument = false;
         for( $i = 1; $i < count( $arguments ); $i++ ){
             if( substr( $arguments[ $i ], 0, 1 ) == '-' ){
@@ -140,7 +140,7 @@ class sSearchCLIHandler{
 
         return $parameters;
     }
-    
+
 	/**
 	 * Show an error
 	 *
@@ -154,11 +154,11 @@ class sSearchCLIHandler{
      * Show help text
      */
     private function ShowHelp(){
-        
+
         if( $error ){
             echo( "ERROR: $error" );
         }
-        
+
         echo
         (
 "
@@ -192,13 +192,13 @@ ssearch_cli.php -m [index|search] [args]
 
   Example:
     ssearch_cli.php -m search -q \"example query\" -s 0 -n 10
-    
+
   Other
   -h                   Show this help
 "
         );
     }
-    
+
 }
 
 ?>

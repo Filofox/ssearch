@@ -10,13 +10,13 @@
  * Base class for search engine wrapper
  */
 class sSearchEngine{
-	
+
 	protected $config;
-	
+
 	public function __construct( $config ){
 		$this->config = $config;
 	}
-	
+
 	public function Index( sSearchContent $content ){
 		throw new Exception( 'You must override this method' );
 	}

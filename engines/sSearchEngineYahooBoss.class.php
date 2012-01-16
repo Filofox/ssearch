@@ -37,7 +37,7 @@ class sSearchEngineYahooBoss extends sSearchEngine{
 			'start' => $query->start,
 			'count'	=> min( max( $query->max, 1 ), 50 ), // Check max value -- values between 1 and 50
 		);
-		
+
 		if( $query->domain != null ){
 			$params[ 'sites' ] = $query->domain;
 		}

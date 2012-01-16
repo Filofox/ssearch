@@ -59,7 +59,7 @@ class sSearchQuery implements Iterator, Countable{
 	public function count(){
 		return count( $this->results );
 	}
-	
+
 	public function toJSON(){
 		return json_encode( $this );
 	}
@@ -71,7 +71,7 @@ class sSearchQuery implements Iterator, Countable{
 	 * @return		string
 	 */
 	public function toXML(){
-		
+
 		$xml =
 '<?xml version="1.0"?>
 <root>
@@ -85,7 +85,7 @@ class sSearchQuery implements Iterator, Countable{
 		[[results]]
 	</results>
 </root>';
-		
+
 		$results_xml = '';
 		foreach( $this as $result ){
 			$results_xml .= str_replace
@@ -114,7 +114,7 @@ class sSearchQuery implements Iterator, Countable{
 '
 			);
 		}
-		
+
 		return str_replace
 		(
 			array
