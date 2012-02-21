@@ -35,13 +35,13 @@ class sSearchIndexer{
 		// Make sure we've got a fully-qualified URL
 		$url = new sSearchURL( $url );
 		$url_string = $url->toString();
-
+		if( substr( $url_string, -1 ) != '/' ){
+			$url_string .= '/';
+		}
 		// Check robots.txt
-		if( $this->CheckRobotsTxt( $url ) ){
-			// Make sure it hasn't already been indexed
-			if( !array_key_exists( $url_string, $this->indexed ) ){
-				$this->indexed[ $url_string ] = true;
-
+		if( !array_key_exists( $url_string, $this->indexed ) ){
+			$this->indexed[ $url_string ] = true;
+			if( $this->CheckRobotsTxt( $url ) ){
 				// Do the request
 				$content_item = $this->Fetch( $url_string );
 
@@ -66,10 +66,15 @@ class sSearchIndexer{
 									$this->config->indexer->follow_external_links
 								){
 									// Wait
-									@time_sleep_until( $wait_time );
 
-									$this->Index( $link_url->toString( $content_item->domain, $content_item->protocol ), $depth );
-
+									$link_url_string = $link_url->toString();
+									if( substr($link_url_string, -1 ) != '/' ){
+										$link_url_string .= '/';
+									}
+									if( !array_key_exists( $link_url_string, $this->indexed ) ){
+										@time_sleep_until( $wait_time );
+										$this->Index( $link_url->toString( $content_item->domain, $content_item->protocol ), $depth );
+									}
 									$wait_time = microtime( true ) + ( $this->config->indexer->index_delay );
 								}
 							}
