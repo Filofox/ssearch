@@ -164,7 +164,7 @@ class sSearchIndexer{
 
 				$ruleapplies = false;
 				if( $request->status == 200 ){
-					$this->ProcessRobotsTxt( $request->GetBody() );
+					$this->ProcessRobotsTxt( $url, $request->GetBody() );
 				} else {
 					$this->robots_txt_files[ $url->domain ] = false;
 				}
@@ -187,7 +187,7 @@ class sSearchIndexer{
 		return true;
 	}
 
-	protected function ProcessRobotsTxt( $content ){
+	protected function ProcessRobotsTxt( sSearchURL $url, $content ){
 		$this->robots_txt_files[ $url->domain ] = array();
 		foreach( explode( "\n", $content ) as $line) {
 			# skip blank lines
