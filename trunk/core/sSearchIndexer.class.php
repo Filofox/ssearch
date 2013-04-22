@@ -104,6 +104,7 @@ class sSearchIndexer{
 		$request = new LibCurlWrapper();
 		$request->AddHeader( 'User-Agent', 'sSearchBot' );
 		$request->SetRetrieveHeaders( true );
+		$request->follow_location = true;
 		$output = null;
 		try{
 			$request->Get( $url );
