@@ -22,6 +22,9 @@ class LibCurlWrapper{
 	private $cookies_send = false;
 	private $cookies;
 
+	public $follow_location = false;
+	public $follow_location_max = 10;
+
 	public $status;
 	public $mime_type;
 	public $charset;
@@ -85,7 +88,11 @@ class LibCurlWrapper{
 		curl_setopt( $curl_handle, CURLOPT_HTTPHEADER, $this->headers );
 
 		// Do it
-		$response = curl_exec ( $curl_handle );
+		if( $this->follow_location ){
+			$response = $this->curl_exec_follow( $curl_handle, $this->follow_location_max );
+		} else {
+			$response = curl_exec ( $curl_handle );
+		}
 
 		// Was there an error?
 		if( $error = curl_errno( $curl_handle ) ){
@@ -324,7 +331,60 @@ class LibCurlWrapper{
 		}
 
 	}
+	/**
+	 * Compatibility function to allow following of redirects when open_basedir is in effect
+	 */
+	private function curl_exec_follow(/*resource*/ $ch, /*int*/ &$maxredirect = null) {
 
+		$mr = $maxredirect === null ? 5 : intval($maxredirect);
+		if (ini_get('open_basedir') == '' && ini_get('safe_mode' == 'Off')) {
+			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, $mr > 0);
+			curl_setopt($ch, CURLOPT_MAXREDIRS, $mr);
+		} else {
+			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+			if ($mr > 0) {
+				$newurl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+				$parts = parse_url($newurl);
+				$host = $parts[ 'scheme' ] . '://' . $parts[ 'host' ];
+				$rch = curl_copy_handle($ch);
+				curl_setopt($rch, CURLOPT_HEADER, true);
+				curl_setopt($rch, CURLOPT_NOBODY, true);
+				curl_setopt($rch, CURLOPT_FORBID_REUSE, false);
+				curl_setopt($rch, CURLOPT_RETURNTRANSFER, true);
+				do {
+					// Make sure it's prepended with host
+					if( strpos( $newurl, 'http' ) !==  0 ){
+						$newurl = $host . $newurl;
+					}
+					curl_setopt($rch, CURLOPT_URL, $newurl);
+
+					$header = curl_exec($rch);
+					if (curl_errno($rch)) {
+						$code = 0;
+					} else {
+						$code = curl_getinfo($rch, CURLINFO_HTTP_CODE);
+						if ($code == 301 || $code == 302) {
+							preg_match('/Location:(.*?)\n/', $header, $matches);
+							$newurl = trim(array_pop($matches));
+						} else {
+							$code = 0;
+						}
+					}
+				} while ($code && --$mr);
+				curl_close($rch);
+				if (!$mr) {
+					if ($maxredirect === null) {
+						trigger_error('Too many redirects. When following redirects, libcurl hit the maximum amount.', E_USER_WARNING);
+					} else {
+						$maxredirect = 0;
+					}
+					return false;
+				}
+				curl_setopt($ch, CURLOPT_URL, $newurl);
+			}
+		}
+		return curl_exec($ch);
+	}
 }
 
 ?>
