@@ -195,6 +195,7 @@ class sSearchIndexer{
 			if(!$line = trim($line)) continue;
 
 			# following rules only apply if User-agent matches $useragent or '*'
+			$ruleapplies = false;
 			if( preg_match('/User-agent: (.*)/i', $line, $match) ) {
 				$ruleapplies = preg_match("/(^\*|" . $this->config->user_agent_string . "$)/i", $match[1]);
 			}
