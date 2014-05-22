@@ -40,7 +40,7 @@ class sSearchIndexer{
 		}
 		// Check robots.txt
 		if( !in_array( $url_string, $this->config->indexer->ignore_url ) && !array_key_exists( $url_string, $this->indexed ) ){
-error_log($url_string);
+
 			$this->indexed[ $url_string ] = true;
 			if( $this->CheckRobotsTxt( $url ) ){
 				// Do the request
