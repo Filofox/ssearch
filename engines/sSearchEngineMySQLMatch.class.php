@@ -79,7 +79,7 @@ class sSearchEngineMySQLMatch extends sSearchEngine{
 		$sql = "
 			DELETE FROM " . $this->config->database->table_prefix . $this->config->database->table . "
 			WHERE
-				'" . md5( $content->url ) . "'
+				'uid = " . md5( $content->url ) . "'
 		";
 		mysql_query( $sql, $this->db ) or die( mysql_error() );
 	}
