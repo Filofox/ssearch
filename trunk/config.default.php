@@ -46,6 +46,9 @@ $config[ 'indexer.include_marker_close' ] = '<!--/search_include-->';
 // If no title is set in <title> or <h1> of HTML content, use first n words of body
 $config[ 'content.title_word_length' ] = 10;
 
+// Always ignore these URLs
+$config[ 'indexer.ignore_url' ] = array();
+
 /**
  * Database
  */
