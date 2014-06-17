@@ -35,8 +35,11 @@ class sSearchIndexer{
 		// Make sure we've got a fully-qualified URL
 		$url = new sSearchURL( $url );
 		$url_string = $url->toString();
-		if( substr( $url_string, -1 ) != '/' ){
+		if( $this->config->indexer->add_trailing_slash && substr( $url_string, -1 ) != '/' ){
 			$url_string .= '/';
+		}
+		if( $this->config->indexer->remove_trailing_slash && substr( $url_string, -1 ) == '/' ){
+			$url_string = substr( $url_string, 0, -1 );
 		}
 		// Check robots.txt
 		if( !in_array( $url_string, $this->config->indexer->ignore_url ) && !array_key_exists( $url_string, $this->indexed ) ){

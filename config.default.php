@@ -35,6 +35,8 @@ $config[ 'query.default_max_results' ] = 10;
 $config[ 'indexer.minimum_word_length' ] = 3;
 $config[ 'indexer.follow_external_links' ] = false;
 $config[ 'indexer.index_delay' ] = 0.5; // Delay between consecutive requests, in seconds
+$config[ 'indexer.add_trailing_slash' ] = true; // Append a trailing slash to all requests?
+$config[ 'indexer.remove_trailing_slash' ] = false; // Remove trailing slash from all requests (if present)?
 
 $config[ 'indexer.exclude_by_marker' ] = true;
 $config[ 'indexer.exclude_marker_open' ] = '<!--NOINDEX-->';
