@@ -14,18 +14,66 @@ require_once( sSearch::GetPathLibrary() . 'core/sSearchEngine.class.php' );
 class sSearchEngineMySQLMatch extends sSearchEngine{
 
 	const table_content = 'content';
+	
+	protected $mysql_lib = self::MYSQL_LIBRARY_MYSQL;
+	
+	const MYSQL_LIBRARY_MYSQL = 0;
+	const MYSQL_LIBRARY_MYSQLI = 1;
 
 	public function __construct( $config ){
+
+		$this->mysql_lib = (function_exists('mysqli_connect'))?self::MYSQL_LIBRARY_MYSQLI:self::MYSQL_LIBRARY_MYSQL;
+
 		parent::__construct( $config );
-		$this->db = mysql_connect
-		(
-			$this->config->database->host,
-			$this->config->database->user,
-			$this->config->database->password
-		);
-		mysql_select_db( $this->config->database->name );
+		if( $this->mysql_lib == self::MYSQL_LIBRARY_MYSQL ){
+			$this->db = mysql_connect
+			(
+				$this->config->database->host,
+				$this->config->database->user,
+				$this->config->database->password
+			);
+			mysql_select_db( $this->config->database->name, $this->db );
+		} else {
+			$this->db = mysqli_connect
+			(
+				$this->config->database->host,
+				$this->config->database->user,
+				$this->config->database->password
+			);
+			mysqli_select_db( $this->db, $this->config->database->name );
+		}
 	}
 
+	protected function Escape( $string ){
+		if( $this->mysql_lib == self::MYSQL_LIBRARY_MYSQL ){
+			return mysql_real_escape_string( $string, $this->db );
+		} else {
+			return mysqli_real_escape_string( $this->db, $string );
+		}
+	}
+	
+	protected function Query( $sql ){
+		if( $this->mysql_lib == self::MYSQL_LIBRARY_MYSQL ){
+			return mysql_query( $sql, $this->db ) or die( mysql_error() );
+		} else {
+			return mysqli_query( $this->db, $sql ) or die( mysql_error() );			
+		}
+	}
+	protected function NumRows( $query ){
+		if( $this->mysql_lib == self::MYSQL_LIBRARY_MYSQL ){
+			return mysql_num_rows( $db_query );
+		} else {
+			return mysqli_num_rows( $db_query );			
+		}
+	}
+	protected function Fetch( $db_query ){
+		if( $this->mysql_lib == self::MYSQL_LIBRARY_MYSQL ){
+			return mysql_fetch_object( $db_query );
+		} else {
+			return mysqli_fetch_object( $db_query );
+		}
+	}
+	
 	/**
 	 * Add (or update) item in the index
 	 *
@@ -49,25 +97,25 @@ class sSearchEngineMySQLMatch extends sSearchEngine{
 			VALUES
 			(
 				'" . md5( $content->url ) . "',
-				'" . mysql_real_escape_string( $content->mime_type, $this->db ) . "',
-				'" . mysql_real_escape_string( $content->title, $this->db ) . "',
-				'" . mysql_real_escape_string( $content->url, $this->db ) . "',
-				'" . mysql_real_escape_string( $content->protocol, $this->db ) . "',
-				'" . mysql_real_escape_string( $content->domain, $this->db ) . "',
-				'" . mysql_real_escape_string( $content->content, $this->db ) . "',
+				'" . $this->Escape( $content->mime_type ) . "',
+				'" . $this->Escape( $content->title ) . "',
+				'" . $this->Escape( $content->url ) . "',
+				'" . $this->Escape( $content->protocol ) . "',
+				'" . $this->Escape( $content->domain ) . "',
+				'" . $this->Escape( $content->content ) . "',
 				NOW()
 			)
 			ON DUPLICATE KEY UPDATE
-				mime_type = '" . mysql_real_escape_string( $content->mime_type, $this->db ) . "',
-				title = '" . mysql_real_escape_string( $content->title, $this->db ) . "',
-				url = '" . mysql_real_escape_string( $content->url, $this->db ) . "',
-				protocol = '" . mysql_real_escape_string( $content->protocol, $this->db ) . "',
-				domain = '" . mysql_real_escape_string( $content->domain, $this->db ) . "',
-				content = '" . mysql_real_escape_string( $content->content, $this->db ) . "',
+				mime_type = '" . $this->Escape( $content->mime_type ) . "',
+				title = '" . $this->Escape( $content->title ) . "',
+				url = '" . $this->Escape( $content->url ) . "',
+				protocol = '" . $this->Escape( $content->protocol ) . "',
+				domain = '" . $this->Escape( $content->domain ) . "',
+				content = '" . $this->Escape( $content->content ) . "',
 				date = NOW()
 		";
 
-		mysql_query( $sql, $this->db ) or die( mysql_error() );
+		$this->Query( $sql );
 	}
 
 	/**
@@ -81,7 +129,7 @@ class sSearchEngineMySQLMatch extends sSearchEngine{
 			WHERE
 				'uid = " . md5( $content->url ) . "'
 		";
-		mysql_query( $sql, $this->db ) or die( mysql_error() );
+		$this->Query( $sql );
 	}
 
 	/**
@@ -95,7 +143,7 @@ class sSearchEngineMySQLMatch extends sSearchEngine{
 			WHERE
 				uid = '" . md5( $url ) . "'
 		";
-		mysql_query( $sql, $this->db ) or die( mysql_error() );
+		$this->Query( $sql );
 	}
 
 	/**
@@ -123,9 +171,10 @@ class sSearchEngineMySQLMatch extends sSearchEngine{
 			$query->max = null;
 		}
 
-		$db_query = mysql_query( $sql, $this->db ) or die( mysql_error() );
-		if( mysql_num_rows( $db_query ) > 0 ){
-			while( $row = mysql_fetch_object( $db_query ) ){
+		$db_query = $this->Query( $sql );
+		$num_rows = $this->NuwRows( $db_query );
+		if( $num_rows > 0 ){
+			while( $row = $this->Fetch( $db_query ) ){
 				$result = new sSearchResult();
 				$result->url = $row->url;
 				$result->title = $row->title;
@@ -136,8 +185,8 @@ class sSearchEngineMySQLMatch extends sSearchEngine{
 		}
 
 		// Get total results count
-		$db_query = mysql_query( 'SELECT FOUND_ROWS() AS count', $this->db ) or die( mysql_error() );
-		$query->total = mysql_fetch_object( $db_query )->count;
+		$db_query = $this->Query( 'SELECT FOUND_ROWS() AS count' );
+		$query->total = $this->Fetch( $db_query )->count;
 	}
 
 	/**
@@ -147,7 +196,7 @@ class sSearchEngineMySQLMatch extends sSearchEngine{
 		$sql = "
 			DELETE FROM " . $this->config->database->table_prefix . $this->config->database->table . "
 		";
-		mysql_query( $sql, $this->db ) or die( mysql_error() );
+		$this->Query( $sql );
 	}
 
 	/**
