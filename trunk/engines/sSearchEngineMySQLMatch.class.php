@@ -156,11 +156,11 @@ class sSearchEngineMySQLMatch extends sSearchEngine{
 			SELECT SQL_CALC_FOUND_ROWS DISTINCT
 				*,
 				MATCH ( content )
-					AGAINST ( '" . mysql_real_escape_string( $query->terms, $this->db ) . "' IN BOOLEAN MODE ) AS score
+					AGAINST ( '" . $this->Escape( $query->terms ) . "' IN BOOLEAN MODE ) AS score
 			FROM " . $this->config->database->table_prefix . $this->config->database->table . "
 			WHERE
 				MATCH ( content )
-				AGAINST ( '" . mysql_real_escape_string( $query->terms, $this->db ) . "' IN BOOLEAN MODE )
+				AGAINST ( '" . $this->Escape( $query->terms, $this->db ) . "' IN BOOLEAN MODE )
 			ORDER BY score DESC
 		";
 
