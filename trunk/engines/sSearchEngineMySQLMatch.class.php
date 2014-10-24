@@ -54,10 +54,17 @@ class sSearchEngineMySQLMatch extends sSearchEngine{
 	
 	protected function Query( $sql ){
 		if( $this->mysql_lib == self::MYSQL_LIBRARY_MYSQL ){
-			return mysql_query( $sql, $this->db ) or die( mysql_error() );
+			$query = mysql_query( $sql, $this->db );
+			if( !$query ){
+				die( mysql_error() );
+			}
 		} else {
-			return mysqli_query( $this->db, $sql ) or die( mysql_error() );			
+			$query = mysqli_query( $this->db, $sql );
+			if( !$query ){
+				die( mysqli_error() );
+			}
 		}
+		return $query;
 	}
 	protected function NumRows( $db_query ){
 		if( $this->mysql_lib == self::MYSQL_LIBRARY_MYSQL ){
@@ -172,6 +179,7 @@ class sSearchEngineMySQLMatch extends sSearchEngine{
 		}
 
 		$db_query = $this->Query( $sql );
+
 		$num_rows = $this->NumRows( $db_query );
 		if( $num_rows > 0 ){
 			while( $row = $this->Fetch( $db_query ) ){
