@@ -59,7 +59,7 @@ class sSearchEngineMySQLMatch extends sSearchEngine{
 			return mysqli_query( $this->db, $sql ) or die( mysql_error() );			
 		}
 	}
-	protected function NumRows( $query ){
+	protected function NumRows( $db_query ){
 		if( $this->mysql_lib == self::MYSQL_LIBRARY_MYSQL ){
 			return mysql_num_rows( $db_query );
 		} else {
