@@ -172,7 +172,7 @@ class sSearchEngineMySQLMatch extends sSearchEngine{
 		}
 
 		$db_query = $this->Query( $sql );
-		$num_rows = $this->NuwRows( $db_query );
+		$num_rows = $this->NumRows( $db_query );
 		if( $num_rows > 0 ){
 			while( $row = $this->Fetch( $db_query ) ){
 				$result = new sSearchResult();
