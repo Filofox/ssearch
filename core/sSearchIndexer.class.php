@@ -76,7 +76,7 @@ class sSearchIndexer{
 										$link_url_string .= '/';
 									}
 									if( !array_key_exists( $link_url_string, $this->indexed ) ){
-										@time_sleep_until( $wait_time );
+										//@time_sleep_until( $wait_time );
 										$this->Index( $link_url->toString( $content_item->domain, $content_item->protocol ), $depth );
 									}
 									$wait_time = microtime( true ) + ( $this->config->indexer->index_delay );
