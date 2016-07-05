@@ -83,7 +83,17 @@ class sSearch{
 	 * Remove a URl from the index
 	 */
 	public function RemoveURL( $url ){
-		$this->engine->RemoveURL( $url );
+		require_once( dirname( __FILE__ ) . '/core/sSearchURL.class.php' );
+		$url = new sSearchURL( $url );
+		$url_string = $url->toString();
+		if( $this->config->indexer->add_trailing_slash && substr( $url_string, -1 ) != '/' ){
+			$url_string .= '/';
+		}
+		if( $this->config->indexer->remove_trailing_slash && substr( $url_string, -1 ) == '/' ){
+			$url_string = substr( $url_string, 0, -1 );
+		}
+
+		$this->engine->RemoveURL( $url_string );
 	}
 
 	/**
